@@ -8,6 +8,9 @@ skip-lint = false
 [programs.localnet]
 paskrypt = "8R5t4StGwtvamNBx8PsMGnPYGT6Q9CRwRtSDLjBRTK15"
 
+[programs.devnet]
+paskrypt = "8R5t4StGwtvamNBx8PsMGnPYGT6Q9CRwRtSDLjBRTK15"
+
 [registry]
 url = "https://api.apr.dev"
 
