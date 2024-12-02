@@ -1,5 +1,8 @@
 # paskrypt
 
+## Description
+Secure Your Secrets: Empowering You with Decentralized Password Protection!
+
 ## Getting Started
 
 ### Prerequisites
