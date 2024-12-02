@@ -165,7 +165,7 @@ function PaskryptCard({ account }: { account: PublicKey }) {
 
 	const username = accountQuery.data?.username;
 
-	async function handleEncryption() {
+	async function handleDecryption() {
 		
 		if (isEncrypted) {
 			setIsEncrypted(!isEncrypted);
@@ -177,7 +177,7 @@ function PaskryptCard({ account }: { account: PublicKey }) {
 		}
 		try {
 			const encoder = new TextEncoder();
-			const message = "Encryption!";
+			const message = "Decryption!";
 			const messageBuffer = encoder.encode(message);
 			await signMessage(messageBuffer);
 			setIsEncrypted(!isEncrypted);
@@ -194,7 +194,7 @@ function PaskryptCard({ account }: { account: PublicKey }) {
 			<h3 className="w-1/2 flex items-center">
 				{!isEncrypted ? <span className="text-sm font-normal pt-1">* * * * *</span> : <span className="text-sm font-normal font-parkinsans">{accountQuery.data?.password}</span>}
 			</h3>
-			<div onClick={handleEncryption}>
+			<div onClick={handleDecryption}>
 				{!isEncrypted ? <IconEye  size={20}/> : <IconEyeOff size={20}/>}
 			</div>
 		</div>

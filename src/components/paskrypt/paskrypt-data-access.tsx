@@ -70,7 +70,7 @@ export function usePaskryptProgramAccount({ account }: { account: PublicKey }) {
   const updateEntry = useMutation<string, Error, CreateEntryArgs>({
     mutationKey: [`updatePasswordEntry`, `update`, { cluster }],
     mutationFn: async ({ username, password }) => {
-      return program.methods.updatePasswordEntry(password).rpc();
+      return program.methods.updatePasswordEntry(username, password).rpc();
     },
     onSuccess: (signature) => {
       transactionToast(signature);
@@ -81,10 +81,10 @@ export function usePaskryptProgramAccount({ account }: { account: PublicKey }) {
     }
   });
 
-  const deleteEntry = useMutation({
+  const deleteEntry = useMutation<string, Error, { username: string }>({
     mutationKey: [`deletePasswordEntry`, `delete`, { cluster }],
-    mutationFn: async () => {
-      return program.methods.deletePasswordEntry().rpc();
+    mutationFn: ({ username }) => {
+      return program.methods.deletePasswordEntry(username).rpc();
     },
     onSuccess: (signature) => {
       transactionToast(signature);
