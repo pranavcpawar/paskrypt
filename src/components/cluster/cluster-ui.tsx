@@ -53,10 +53,10 @@ export function ClusterUiSelect() {
   const { clusters, setCluster, cluster } = useCluster()
   return (
     <div className="dropdown dropdown-end">
-      <label tabIndex={0} className="btn btn-primary rounded-btn">
+      <label tabIndex={0} className="bg-black px-8 py-3 cursor-pointer rounded-[12px] border-2 border-[#252525]">
         {cluster.name}
       </label>
-      <ul tabIndex={0} className="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">
+      <ul tabIndex={0} className="menu dropdown-content z-[1] p-2 shadow bg-black rounded-box w-52 mt-4 gap-1">
         {clusters.map((item) => (
           <li key={item.name}>
             <button

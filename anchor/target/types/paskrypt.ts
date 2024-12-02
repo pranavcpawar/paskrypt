@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/paskrypt.json`.
  */
 export type Paskrypt = {
-  "address": "AsjZ3kWAUSQRNt2pZVeJkywhZ6gpLpHZmJjduPmKZDZZ",
+  "address": "8R5t4StGwtvamNBx8PsMGnPYGT6Q9CRwRtSDLjBRTK15",
   "metadata": {
     "name": "paskrypt",
     "version": "0.1.0",
@@ -14,90 +14,36 @@ export type Paskrypt = {
   },
   "instructions": [
     {
-      "name": "close",
+      "name": "createPasswordEntry",
       "discriminator": [
-        98,
-        165,
-        201,
-        177,
-        108,
-        65,
-        206,
-        96
-      ],
-      "accounts": [
-        {
-          "name": "payer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "paskrypt",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "decrement",
-      "discriminator": [
-        106,
-        227,
-        168,
-        59,
-        248,
-        27,
-        150,
-        101
-      ],
-      "accounts": [
-        {
-          "name": "paskrypt",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "increment",
-      "discriminator": [
-        11,
-        18,
-        104,
-        9,
-        104,
-        174,
-        59,
-        33
-      ],
-      "accounts": [
-        {
-          "name": "paskrypt",
-          "writable": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "initialize",
-      "discriminator": [
-        175,
-        175,
-        109,
+        183,
+        159,
+        189,
+        61,
+        181,
+        208,
         31,
-        13,
-        152,
-        155,
-        237
+        13
       ],
       "accounts": [
         {
-          "name": "payer",
+          "name": "passwordEntry",
           "writable": true,
-          "signer": true
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "username"
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
         },
         {
-          "name": "paskrypt",
+          "name": "owner",
           "writable": true,
           "signer": true
         },
@@ -106,58 +52,146 @@ export type Paskrypt = {
           "address": "11111111111111111111111111111111"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "username",
+          "type": "string"
+        },
+        {
+          "name": "password",
+          "type": "string"
+        }
+      ]
     },
     {
-      "name": "set",
+      "name": "deletePasswordEntry",
       "discriminator": [
-        198,
-        51,
-        53,
-        241,
-        116,
-        29,
-        126,
-        194
+        245,
+        89,
+        232,
+        174,
+        120,
+        179,
+        64,
+        6
       ],
       "accounts": [
         {
-          "name": "paskrypt",
-          "writable": true
+          "name": "passwordEntry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "username"
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
         {
-          "name": "value",
-          "type": "u8"
+          "name": "username",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "updatePasswordEntry",
+      "discriminator": [
+        29,
+        150,
+        158,
+        155,
+        111,
+        136,
+        22,
+        42
+      ],
+      "accounts": [
+        {
+          "name": "passwordEntry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "username"
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "username",
+          "type": "string"
+        },
+        {
+          "name": "password",
+          "type": "string"
         }
       ]
     }
   ],
   "accounts": [
     {
-      "name": "paskrypt",
+      "name": "passwordEntryState",
       "discriminator": [
-        255,
-        176,
-        4,
-        245,
-        188,
-        253,
-        124,
-        25
+        112,
+        71,
+        211,
+        43,
+        142,
+        123,
+        120,
+        54
       ]
     }
   ],
   "types": [
     {
-      "name": "paskrypt",
+      "name": "passwordEntryState",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "count",
-            "type": "u8"
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "username",
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "type": "string"
           }
         ]
       }

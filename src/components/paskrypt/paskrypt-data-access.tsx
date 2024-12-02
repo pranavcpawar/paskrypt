@@ -10,6 +10,12 @@ import {useCluster} from '../cluster/cluster-data-access'
 import {useAnchorProvider} from '../solana/solana-provider'
 import {useTransactionToast} from '../ui/ui-layout'
 
+interface CreateEntryArgs {
+  username: string;
+  password: string;
+  owner: PublicKey;
+}
+
 export function usePaskryptProgram() {
   const { connection } = useConnection()
   const { cluster } = useCluster()
@@ -20,7 +26,7 @@ export function usePaskryptProgram() {
 
   const accounts = useQuery({
     queryKey: ['paskrypt', 'all', { cluster }],
-    queryFn: () => program.account.paskrypt.all(),
+    queryFn: () => program.account.passwordEntryState.all(),
   })
 
   const getProgramAccount = useQuery({
@@ -28,23 +34,26 @@ export function usePaskryptProgram() {
     queryFn: () => connection.getParsedAccountInfo(programId),
   })
 
-  const initialize = useMutation({
-    mutationKey: ['paskrypt', 'initialize', { cluster }],
-    mutationFn: (keypair: Keypair) =>
-      program.methods.initialize().accounts({ paskrypt: keypair.publicKey }).signers([keypair]).rpc(),
-    onSuccess: (signature) => {
-      transactionToast(signature)
-      return accounts.refetch()
+  const createPasswordEntry = useMutation<string, Error, CreateEntryArgs>({
+    mutationKey: [`createPasswordEntry`, `create`, { cluster }],
+    mutationFn: async ({ username, password, owner }) => {
+      return program.methods.createPasswordEntry(username, password).rpc();
     },
-    onError: () => toast.error('Failed to initialize account'),
-  })
+    onSuccess: (signature) => {
+      transactionToast(signature);
+      accounts.refetch();
+    },
+    onError: (error) => {
+      toast.error(`Can not create password entry: ${error}`);
+    }
+  });
 
   return {
     program,
     programId,
     accounts,
     getProgramAccount,
-    initialize,
+    createPasswordEntry
   }
 }
 
@@ -55,50 +64,40 @@ export function usePaskryptProgramAccount({ account }: { account: PublicKey }) {
 
   const accountQuery = useQuery({
     queryKey: ['paskrypt', 'fetch', { cluster, account }],
-    queryFn: () => program.account.paskrypt.fetch(account),
+    queryFn: () => program.account.passwordEntryState.fetch(account),
   })
 
-  const closeMutation = useMutation({
-    mutationKey: ['paskrypt', 'close', { cluster, account }],
-    mutationFn: () => program.methods.close().accounts({ paskrypt: account }).rpc(),
-    onSuccess: (tx) => {
-      transactionToast(tx)
-      return accounts.refetch()
+  const updateEntry = useMutation<string, Error, CreateEntryArgs>({
+    mutationKey: [`updatePasswordEntry`, `update`, { cluster }],
+    mutationFn: async ({ username, password }) => {
+      return program.methods.updatePasswordEntry(password).rpc();
     },
-  })
+    onSuccess: (signature) => {
+      transactionToast(signature);
+      accounts.refetch();
+    },
+    onError: (error) => {
+      toast.error(`Can not update password entry: ${error}`);
+    }
+  });
 
-  const decrementMutation = useMutation({
-    mutationKey: ['paskrypt', 'decrement', { cluster, account }],
-    mutationFn: () => program.methods.decrement().accounts({ paskrypt: account }).rpc(),
-    onSuccess: (tx) => {
-      transactionToast(tx)
-      return accountQuery.refetch()
+  const deleteEntry = useMutation({
+    mutationKey: [`deletePasswordEntry`, `delete`, { cluster }],
+    mutationFn: async () => {
+      return program.methods.deletePasswordEntry().rpc();
     },
-  })
-
-  const incrementMutation = useMutation({
-    mutationKey: ['paskrypt', 'increment', { cluster, account }],
-    mutationFn: () => program.methods.increment().accounts({ paskrypt: account }).rpc(),
-    onSuccess: (tx) => {
-      transactionToast(tx)
-      return accountQuery.refetch()
+    onSuccess: (signature) => {
+      transactionToast(signature);
+      accounts.refetch();
     },
-  })
-
-  const setMutation = useMutation({
-    mutationKey: ['paskrypt', 'set', { cluster, account }],
-    mutationFn: (value: number) => program.methods.set(value).accounts({ paskrypt: account }).rpc(),
-    onSuccess: (tx) => {
-      transactionToast(tx)
-      return accountQuery.refetch()
-    },
-  })
+    onError: (error) => {
+      toast.error(`Can not delete password entry: ${error}`);
+    }
+  });
 
   return {
     accountQuery,
-    closeMutation,
-    decrementMutation,
-    incrementMutation,
-    setMutation,
-  }
+    updateEntry,
+    deleteEntry
+  };
 }

@@ -1,19 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&family=Unbounded:wght@200..900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 html,
 body {
-    height: 100%;
+    font-family: 'Parkinsans', sans-serif;
+    background: #000;
 }
 
 .wallet-adapter-button-trigger {
-    background: rgb(100, 26, 230) !important;
-    border-radius: 8px !important;
-    padding-left: 16px !important;
-    padding-right: 16px !important;
+    border-radius: 12px !important;
+    padding: 16px !important;
+    border: 2px solid #252525 !important;
+    background: #000 !important;
 }
 .wallet-adapter-dropdown-list,
 .wallet-adapter-button {
     font-family: inherit !important;
+    background: #000 !important;
+    border-radius: 8px !important;
+    border: 2px solid #252525 !important;
+}
+.wallet-adapter-modal-wrapper {
+    background: #000 !important;
+    padding: 8px !important;
+    border: 2px solid #252525 !important;
+    border-radius: 12px !important;
+}
+
+.wallet-adapter-modal-button-close {
+    background: #000 !important;
+    color: #dadada !important;
+    padding: 8px !important;
 }

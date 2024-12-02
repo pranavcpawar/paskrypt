@@ -2,69 +2,87 @@
 
 use anchor_lang::prelude::*;
 
-declare_id!("AsjZ3kWAUSQRNt2pZVeJkywhZ6gpLpHZmJjduPmKZDZZ");
+declare_id!("8R5t4StGwtvamNBx8PsMGnPYGT6Q9CRwRtSDLjBRTK15");
 
 #[program]
 pub mod paskrypt {
     use super::*;
 
-  pub fn close(_ctx: Context<ClosePaskrypt>) -> Result<()> {
-    Ok(())
-  }
+    pub fn create_password_entry(ctx: Context<CreatePasswordEntry>, username: String, password: String) -> Result<()> {
+      let password_entry = &mut ctx.accounts.password_entry;
+      password_entry.owner = *ctx.accounts.owner.key;
+      password_entry.username = username;
+      password_entry.password = password;
 
-  pub fn decrement(ctx: Context<Update>) -> Result<()> {
-    ctx.accounts.paskrypt.count = ctx.accounts.paskrypt.count.checked_sub(1).unwrap();
-    Ok(())
-  }
+      Ok(())
+    }
 
-  pub fn increment(ctx: Context<Update>) -> Result<()> {
-    ctx.accounts.paskrypt.count = ctx.accounts.paskrypt.count.checked_add(1).unwrap();
-    Ok(())
-  }
+    pub fn update_password_entry(ctx: Context<UpdatePasswordEntry>, _username: String, password: String) -> Result<()> {
+      let password_entry = &mut ctx.accounts.password_entry;
+      password_entry.password = password;
 
-  pub fn initialize(_ctx: Context<InitializePaskrypt>) -> Result<()> {
-    Ok(())
-  }
+      Ok(())
+    }
 
-  pub fn set(ctx: Context<Update>, value: u8) -> Result<()> {
-    ctx.accounts.paskrypt.count = value.clone();
-    Ok(())
-  }
+    pub fn delete_password_entry(_ctx: Context<DeletePasswordEntry>, _username: String) -> Result<()> {
+      Ok(())
+    }
 }
 
 #[derive(Accounts)]
-pub struct InitializePaskrypt<'info> {
-  #[account(mut)]
-  pub payer: Signer<'info>,
-
+#[instruction(username: String)]
+pub struct CreatePasswordEntry<'info> {
   #[account(
-  init,
-  space = 8 + Paskrypt::INIT_SPACE,
-  payer = payer
+    init,
+    seeds = [username.as_bytes(), owner.key().as_ref()],
+    bump,
+    payer = owner,
+    space = 8 + PasswordEntryState::INIT_SPACE
   )]
-  pub paskrypt: Account<'info, Paskrypt>,
+  pub password_entry: Account<'info, PasswordEntryState>,
+  #[account(mut)]
+  pub owner: Signer<'info>,
   pub system_program: Program<'info, System>,
 }
-#[derive(Accounts)]
-pub struct ClosePaskrypt<'info> {
-  #[account(mut)]
-  pub payer: Signer<'info>,
 
+#[derive(Accounts)]
+#[instruction(username: String)]
+pub struct UpdatePasswordEntry<'info> {
   #[account(
-  mut,
-  close = payer, // close account and return lamports to payer
+    mut,
+    seeds = [username.as_bytes(), owner.key().as_ref()],
+    bump,
+    realloc = 8 + PasswordEntryState::INIT_SPACE,
+    realloc::payer = owner, 
+    realloc::zero = true, 
   )]
-  pub paskrypt: Account<'info, Paskrypt>,
+  pub password_entry: Account<'info, PasswordEntryState>,
+  #[account(mut)]
+  pub owner: Signer<'info>,
+  pub system_program: Program<'info, System>,
 }
 
 #[derive(Accounts)]
-pub struct Update<'info> {
+#[instruction(username: String)]
+pub struct DeletePasswordEntry<'info> {
+  #[account(
+    mut,
+    seeds = [username.as_bytes(), owner.key().as_ref()],
+    bump,
+    close = owner,
+  )]
+  pub password_entry: Account<'info, PasswordEntryState>,
   #[account(mut)]
-  pub paskrypt: Account<'info, Paskrypt>,
+  pub owner: Signer<'info>,
+  pub system_program: Program<'info, System>,
 }
 
 #[account]
 #[derive(InitSpace)]
-pub struct Paskrypt {
-  count: u8,
+pub struct PasswordEntryState {
+  pub owner: Pubkey,
+  #[max_len(64)]
+  pub username: String,
+  #[max_len(64)]
+  pub password: String,
 }
